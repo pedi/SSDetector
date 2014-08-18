@@ -1,0 +1,12 @@
+{
+  "name": "SSDetector",
+  "version": "0.0.1",
+  "description": "silver sense activity detector",
+  "main": "app.js",
+  "dependencies" : {
+    "express" : "*",
+    "node-svm" : "*"
+  },
+  "author": "chenchen",
+  "license": "ISC"
+}
