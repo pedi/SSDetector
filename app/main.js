@@ -1,6 +1,23 @@
 var nodesvm = require("node-svm");
 var express = require("express");
+var bodyParser = require("body-parser");
 var app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended : false}));
+app.use(function (req, res, next) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "*");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Accept, Content-Type");
+    next();
+});
+app.post("/predict", function(req, res) {
+    var rawData = req.body;
+    //console.log (req.body);
+    // call SVM prediction function using rawData
+    // for test,now echo back data
+
+    res.send(rawData);
+});
 app.get("/index.html", function(req, res) {
     res.send("Hello World");
 });
@@ -8,27 +25,4 @@ app.get("/index.html", function(req, res) {
 var server = app.listen(3000, function() {
     console.log("listening on port %d", server.address().port);
 });
-console.log ("server listening at port 3000");
 
-var xorProblem = [
-  [[0, 0], 0],
-  [[0, 1], 1],
-  [[1, 0], 1],
-  [[1, 1], 0]
-];
-var svm = new nodesvm.CSVC({
-  kernel : nodesvm.KernelTypes.RBF,
-  C: 1.0,
-  gamma : 0.5
-});
-
-svm.once("trained", function(report) {
-  [0,1].forEach(function(a) {
-    [0,1].forEach(function(b) {
-      var prediction = svm.predict([a, b]);
-      console.log ("%d XOR %d -> %d", a, b, prediction);
-    });
-  });
-});
-
-svm.train(xorProblem);
