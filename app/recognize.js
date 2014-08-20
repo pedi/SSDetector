@@ -18,18 +18,20 @@ Output: an array of 1X20;
 */
 function featureCalculation(data){
     var feature = new Array();
+        var index = 0;
         for (var colomn in data[0])
         {
             var sum = 0;
             var sum2 = 0;
-            for (var row=0; row<=data.length; row++)
+            for (var row=0; row<data.length; row++)
             {
                 sum += data[row][colomn];
                 sum2 += data[row][colomn]*data[row][colomn];
             }   
             average = sum/data.length;
-            feature[colomn] = average;
-            feature[colomn+10] = Math.sqrt(sum2/data.length - average*average);
+            feature[index] = average;
+            feature[index+10] = Math.sqrt(sum2/data.length - average*average);
+            index++;
         }
     return feature;
 }
@@ -105,23 +107,25 @@ Description: return the result of prediction.
 Input: an array of 200X10(raw data).
 Output: an string of result.
 */
-
-
-exports.recognize = function(data){
+module.exports = function(data){
     var feature = featureCalculation(data);
+    console.log (feature);
     var featureScaled = scale(feature);   
+    console.log (featureScaled);
     var patternNum = svm.predict(featureScaled);
-    switch(patternNum)
-case:1
+    switch(patternNum) {
+
+    case 1:
      return "sitting";
-case:2
+    case 2:
      return "sit2stand";
-case:3
+    case 3:
      return "standing";
-case:4
+    case 4:
      return "stand2sit";
-case:5
+    case 5:
      return "walking";
-default:
+    default:
      return "no result";
+    }
 };

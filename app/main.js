@@ -2,6 +2,7 @@ var nodesvm = require("node-svm");
 var express = require("express");
 var bodyParser = require("body-parser");
 var app = express();
+var recognize = require("./recognize");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : false}));
 app.use(function (req, res, next) {
@@ -15,8 +16,10 @@ app.post("/predict", function(req, res) {
     //console.log (req.body);
     // call SVM prediction function using rawData
     // for test,now echo back data
-
-    res.send(rawData);
+    var result = recognize(rawData);
+    console.log (result);
+    res.send(result);
+    //    res.send(rawData);
 });
 app.get("/index.html", function(req, res) {
     res.send("Hello World");
