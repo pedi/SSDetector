@@ -71,7 +71,7 @@ function maxAndMin(feature)
 function scale(feature){
     var featureScaled = new Array();
     var range = maxAndMin(feature);
-    for(each in feature)
+    for(var each=0; each<feature.length; each++)
     {
         featureScaled[each] = ((feature[each]-range[1])/(range[0]-range[1]))*(2)-1;
     }
