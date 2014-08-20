@@ -18,20 +18,19 @@ Output: an array of 1X20;
 */
 function featureCalculation(data){
     var feature = new Array();
-    for (var colomn=0; colomn<10; colomn++)
-    {
-        var sum = 0;
-        var sum2 = 0;
-        for (row in data)
+        for (var colomn in data[0])
         {
-            sum += data[row][colomn];
-            sum2 += data[row][colomn]*data[row][colomn];
-        }   
-        average = sum/200;
-        feature[colomn] = average;
-        feature[colomn+10] = java.lang.Math.sqrt(sum2/200 - average*average);
-    }
-
+            var sum = 0;
+            var sum2 = 0;
+            for (var row=0; row<=data.length; row++)
+            {
+                sum += data[row][colomn];
+                sum2 += data[row][colomn]*data[row][colomn];
+            }   
+            average = sum/data.length;
+            feature[colomn] = average;
+            feature[colomn+10] = Math.sqrt(sum2/data.length - average*average);
+        }
     return feature;
 }
 
