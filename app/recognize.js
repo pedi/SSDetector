@@ -54,10 +54,10 @@ function maxAndMin(feature)
     var range = new Array();
     for (var i=1; i<feature.length; i++)
     {
-        if(feature[i]>max)
+        if(feature[i]>=max)
         {
             max = feature[i];
-        }else if(feature[i]<min)
+        }else if(feature[i]<=min)
         {
             min = feature[i];
         }
