@@ -49,7 +49,7 @@ Description: return the max and min of the given array.
 */
 function maxAndMin(feature)
 {
-    var max = feature[0];
+    var max = feature[0]+0.001;
     var min = feature[0];
     var range = new Array();
     for (var i=1; i<feature.length; i++)
@@ -73,7 +73,7 @@ function scale(feature){
     var range = maxAndMin(feature);
     for(var each=0; each<feature.length; each++)
     {
-        featureScaled[each] = ((feature[each]-range[1])/(range[0]-range[1]))*(2)-1;
+        featureScaled[each] = ((feature[each]-range[1])/(range[0]-range[1]))*2-1;
     }
     return featureScaled;
 }
