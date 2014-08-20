@@ -71,6 +71,7 @@ function maxAndMin(feature)
 function scale(feature){
     var featureScaled = new Array();
     var range = maxAndMin(feature);
+    console.log ("min : " + range[1] + " max : " + range[0]);
     for(var each=0; each<feature.length; each++)
     {
         featureScaled[each] = ((feature[each]-range[1])/(range[0]-range[1]))*2-1;
@@ -109,7 +110,6 @@ Output: an string of result.
 */
 module.exports = function(data){
     var feature = featureCalculation(data);
-    console.log (feature);
     var featureScaled = scale(feature);   
     console.log (featureScaled);
     var patternNum = svm.predict(featureScaled);
