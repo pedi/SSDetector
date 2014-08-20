@@ -57,7 +57,7 @@ function maxAndMin(feature)
         if(feature[i]>max)
         {
             max = feature[i];
-        }else
+        }else if(feature[i]<min)
         {
             min = feature[i];
         }
