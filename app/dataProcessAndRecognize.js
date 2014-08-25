@@ -53,20 +53,30 @@ function featureCalculation3D(scaledData,windowSize){
 
 function featureCalculation2D(scaledData){
     var instanceNum = scaledData.length;
-    var sensorNum = scaledData[0].length;
     var feature = new Array();
+    var columnIndex = 0;
+    var sensorNum = 0;
+    for (var eachColumn in scaledData[0]) {
+        if (scaledData[0].hasOwnProperty(eachColumn)) {
+            sensorNum++;
+        }
+    }
 
     //var feature = new Array();
-        for(var colomn=0; colomn<sensorNum; colomn++){
-            var sum = 0;
-            var sum2 = 0;
-            for(var row=0; row<instanceNum; row++){
-                sum += scaledData[row][colomn];
-                sum2 += Math.pow(scaledData[row][colomn],2);
+        for(var colomn in scaledData[0]){
+            if (scaledData[0].hasOwnProperty(colomn)) {
+                var sum = 0;
+                var sum2 = 0;
+                for(var row=0; row<instanceNum; row++){
+                    sum += scaledData[row][colomn];
+                    sum2 += Math.pow(scaledData[row][colomn],2);
+                }
+                average = sum/instanceNum;
+                feature[columnIndex] = average;
+                feature[columnIndex+sensorNum] = Math.sqrt(sum2/instanceNum - Math.pow(average,2));
+                columnIndex++;
             }
-            average = sum/instanceNum;
-            feature[colomn] = average;
-            feature[colomn+sensorNum] = Math.sqrt(sum2/instanceNum - Math.pow(average,2));
+            
         }
         console.log("feature done");
         return feature;
@@ -116,12 +126,15 @@ function scaleData2D(data)
         [20,20,20,5,7, 4,8,17,13,25],
         [-20,-20,-20,-4,-6, -3,-5,-20,-11,-21]
     ];
-
-    for(var colomn=0; colomn<data[0].length; colomn++){
-        var max = range[0][colomn];
-        var min = range[1][colomn];
-        for(var row=0; row<data.length; row++){
-            data[row][colomn] = (data[row][colomn] - min)/(max - min)*2-1;
+    var colomnIndex = 0;
+    for(var colomn in data[0]){
+        if (data[0].hasOwnProperty(colomn)) {
+            var max = range[0][colomnIndex];
+            var min = range[1][colomnIndex];
+            for(var row=0; row<data.length; row++){
+                data[row][colomn] = (data[row][colomn] - min)/(max - min)*2-1;
+            }
+            colomnIndex++;
         }
     }
     console.log("scale done");
@@ -233,8 +246,7 @@ function recognize(data){
     var patternNum;
     var result;
     var dataScaled = scaleData2D(data);
-    var feature = featureCalculation3D(dataScaled);
-       
+    var feature = featureCalculation2D(dataScaled);
     patternNum = svm.predict(feature);
     console.log("prediction done");
         //return patternNum;
