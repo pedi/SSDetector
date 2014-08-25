@@ -212,10 +212,8 @@ Input: an array of instanceNum X sensorNum.
 Output: an string of result.
 */
 
-function recognize(data,callback){
-    //var oldSvm = trainAndReturnModel(address);
-    var patternNum;
-    var result;
+function trainModel(data)
+{
     var svm = new nodesvm.CSVC({
         kernelType: nodesvm.KernelTypes.RBF,
         gamma: 1,
@@ -224,15 +222,19 @@ function recognize(data,callback){
         reduce: false
     });
     console.log("svm is successfully built");
+    
 readFile("trainNew.csv",function(trainingData){
+        svm.train(trainingData);
+        return svm;
+}
 
-    svm.once('trained', function(report){
-        //console.log('SVM trained. report :\n%s', JSON.stringify(report, null, '\t'));
-
-        var dataScaled = scaleData2D(data);   
-        //console.log (dataScaled);
-        var feature = featureCalculation2D(dataScaled);
-        //console.log (feature);
+function recognize(svm,data,callback){
+    //var oldSvm = trainAndReturnModel(address);
+    var patternNum;
+    var result;
+    var dataScaled = scaleData2D(data);
+    var feature = featureCalculation3D(dataScaled);
+       
         patternNum = svm.predict(feature);
         console.log("prediction done");
         //return patternNum;
@@ -256,14 +258,10 @@ readFile("trainNew.csv",function(trainingData){
         default:
         result = "no result";
         }
-
         callback(result);
     });
-    svm.train(trainingData);
-    });
-
-};
 
 exports.recognize = recognize;
+exports.trainModel = trainModel;
 //exports.trainAndSaveModel = trainAndSaveModel;
 //exports.featureCalculation3D = featureCalculation3D;
