@@ -10,7 +10,6 @@ Time: 2014.08.21
 
 var nodesvm = require("node-svm");
 var readFile = require("./readDataSetFromCSVFile");
-var async = require("async");
 ///////////////////////////////////////////////////////////////////////
 //Data Processing: feature calculation & scale
 ///////////////////////////////////////////////////////////////////////
@@ -211,10 +210,10 @@ Description: return the result of prediction given a new group of raw data.
 Input: an array of instanceNum X sensorNum.
 Output: an string of result.
 */
-
-function trainModel(data)
+var svm;
+function trainModel(callback)
 {
-    var svm = new nodesvm.CSVC({
+    svm = new nodesvm.CSVC({
         kernelType: nodesvm.KernelTypes.RBF,
         gamma: 1,
         C: 1,
@@ -223,43 +222,43 @@ function trainModel(data)
     });
     console.log("svm is successfully built");
     
-readFile("trainNew.csv",function(trainingData){
+    readFile("trainNew.csv",function(trainingData){
         svm.train(trainingData);
-        return svm;
+        svm.once("trained", callback);
+    });
 }
 
-function recognize(svm,data,callback){
+function recognize(data){
     //var oldSvm = trainAndReturnModel(address);
     var patternNum;
     var result;
     var dataScaled = scaleData2D(data);
     var feature = featureCalculation3D(dataScaled);
        
-        patternNum = svm.predict(feature);
-        console.log("prediction done");
+    patternNum = svm.predict(feature);
+    console.log("prediction done");
         //return patternNum;
-       switch(patternNum) {
-
+    switch(patternNum) {
         case 1:
-        result = "sitting";
-        break;
+            result = "sitting";
+            break;
         case 2:
-        result = "sit2stand";
-        break;
+            result = "sit2stand";
+            break;
         case 3:
-        result = "standing";
-        break;
+            result = "standing";
+            break;
         case 4:
-        result = "stand2sit";
-        break;
+            result = "stand2sit";
+            break;
         case 5:
-        result = "walking";
-        break;
+            result = "walking";
+            break;
         default:
-        result = "no result";
-        }
-        callback(result);
-    });
+            result = "no result";
+    }
+    return result;
+};
 
 exports.recognize = recognize;
 exports.trainModel = trainModel;
