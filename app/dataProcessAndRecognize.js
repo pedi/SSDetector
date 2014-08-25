@@ -235,7 +235,7 @@ function trainModel(callback)
     });
     console.log("svm is successfully built");
     
-    readFile("trainNew.csv",function(trainingData){
+    readFile("trainNew135.csv",function(trainingData){
         svm.train(trainingData);
         svm.once("trained", callback);
     });
