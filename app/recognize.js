@@ -30,7 +30,8 @@ function featureCalculation(data){
             }   
             average = sum/data.length;
             feature[index] = average;
-            feature[index+10] = Math.sqrt(sum2/data.length - average*average);
+            //feature[index+10] = Math.sqrt(sum2/data.length - average*average);
+            feature[index+10] = Math.sqrt(sum2 - average*average);
             index++;
         }
     return feature;
@@ -117,14 +118,19 @@ module.exports = function(data){
 
     case 1:
      return "sitting";
+     break;
     case 2:
      return "sit2stand";
+     break;
     case 3:
      return "standing";
+     break;
     case 4:
      return "stand2sit";
+     break;
     case 5:
      return "walking";
+     break;
     default:
      return "no result";
     }
