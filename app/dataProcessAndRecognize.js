@@ -10,7 +10,6 @@ Time: 2014.08.21
 
 var nodesvm = require("node-svm");
 var readFile = require("./readDataSetFromCSVFile");
-var async = require("async");
 ///////////////////////////////////////////////////////////////////////
 //Data Processing: feature calculation & scale
 ///////////////////////////////////////////////////////////////////////
@@ -54,20 +53,30 @@ function featureCalculation3D(scaledData,windowSize){
 
 function featureCalculation2D(scaledData){
     var instanceNum = scaledData.length;
-    var sensorNum = scaledData[0].length;
     var feature = new Array();
+    var columnIndex = 0;
+    var sensorNum = 0;
+    for (var eachColumn in scaledData[0]) {
+        if (scaledData[0].hasOwnProperty(eachColumn)) {
+            sensorNum++;
+        }
+    }
 
     //var feature = new Array();
-        for(var colomn=0; colomn<sensorNum; colomn++){
-            var sum = 0;
-            var sum2 = 0;
-            for(var row=0; row<instanceNum; row++){
-                sum += scaledData[row][colomn];
-                sum2 += Math.pow(scaledData[row][colomn],2);
+        for(var colomn in scaledData[0]){
+            if (scaledData[0].hasOwnProperty(colomn)) {
+                var sum = 0;
+                var sum2 = 0;
+                for(var row=0; row<instanceNum; row++){
+                    sum += scaledData[row][colomn];
+                    sum2 += Math.pow(scaledData[row][colomn],2);
+                }
+                average = sum/instanceNum;
+                feature[columnIndex] = average;
+                feature[columnIndex+sensorNum] = Math.sqrt(sum2/instanceNum - Math.pow(average,2));
+                columnIndex++;
             }
-            average = sum/instanceNum;
-            feature[colomn] = average;
-            feature[colomn+sensorNum] = Math.sqrt(sum2/instanceNum - Math.pow(average,2));
+            
         }
         console.log("feature done");
         return feature;
@@ -117,12 +126,15 @@ function scaleData2D(data)
         [20,20,20,5,7, 4,8,17,13,25],
         [-20,-20,-20,-4,-6, -3,-5,-20,-11,-21]
     ];
-
-    for(var colomn=0; colomn<data[0].length; colomn++){
-        var max = range[0][colomn];
-        var min = range[1][colomn];
-        for(var row=0; row<data.length; row++){
-            data[row][colomn] = (data[row][colomn] - min)/(max - min)*2-1;
+    var colomnIndex = 0;
+    for(var colomn in data[0]){
+        if (data[0].hasOwnProperty(colomn)) {
+            var max = range[0][colomnIndex];
+            var min = range[1][colomnIndex];
+            for(var row=0; row<data.length; row++){
+                data[row][colomn] = (data[row][colomn] - min)/(max - min)*2-1;
+            }
+            colomnIndex++;
         }
     }
     console.log("scale done");
@@ -211,10 +223,10 @@ Description: return the result of prediction given a new group of raw data.
 Input: an array of instanceNum X sensorNum.
 Output: an string of result.
 */
-
-function trainModel()
+var svm;
+function trainModel(callback)
 {
-    var svm = new nodesvm.CSVC({
+    svm = new nodesvm.CSVC({
         kernelType: nodesvm.KernelTypes.RBF,
         gamma: 1,
         C: 1,
@@ -223,43 +235,42 @@ function trainModel()
     });
     console.log("svm is successfully built");
     
-readFile("trainNew.csv",function(trainingData){
+    readFile("trainNew.csv",function(trainingData){
         svm.train(trainingData);
-        return svm;
+        svm.once("trained", callback);
+    });
 }
 
-function recognize(svm,data,callback){
+function recognize(data){
     //var oldSvm = trainAndReturnModel(address);
     var patternNum;
     var result;
     var dataScaled = scaleData2D(data);
-    var feature = featureCalculation3D(dataScaled);
-       
-        patternNum = svm.predict(feature);
-        console.log("prediction done");
+    var feature = featureCalculation2D(dataScaled);
+    patternNum = svm.predict(feature);
+    console.log("prediction done");
         //return patternNum;
-       switch(patternNum) {
-
+    switch(patternNum) {
         case 1:
-        result = "sitting";
-        break;
+            result = "sitting";
+            break;
         case 2:
-        result = "sit2stand";
-        break;
+            result = "sit2stand";
+            break;
         case 3:
-        result = "standing";
-        break;
+            result = "standing";
+            break;
         case 4:
-        result = "stand2sit";
-        break;
+            result = "stand2sit";
+            break;
         case 5:
-        result = "walking";
-        break;
+            result = "walking";
+            break;
         default:
-        result = "no result";
-        }
-        callback(result);
-    });
+            result = "no result";
+    }
+    return result;
+};
 
 exports.recognize = recognize;
 exports.trainModel = trainModel;
