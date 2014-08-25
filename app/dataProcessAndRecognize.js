@@ -212,7 +212,7 @@ Input: an array of instanceNum X sensorNum.
 Output: an string of result.
 */
 
-function trainModel(data)
+function trainModel()
 {
     var svm = new nodesvm.CSVC({
         kernelType: nodesvm.KernelTypes.RBF,
