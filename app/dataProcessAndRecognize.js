@@ -255,13 +255,13 @@ function recognize(data){
             result = "sitting";
             break;
         case 2:
-            result = "sit2stand";
+            result = "no result";
             break;
         case 3:
             result = "standing";
             break;
         case 4:
-            result = "stand2sit";
+            result = "transition";
             break;
         case 5:
             result = "walking";
