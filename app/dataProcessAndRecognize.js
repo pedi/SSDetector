@@ -11,7 +11,7 @@ Time: 2014.08.21
 var nodesvm = require("node-svm");
 var readFile = require("./readDataSetFromCSVFile");
 ///////////////////////////////////////////////////////////////////////
-//Data Processing: feature calculation & scale
+//Feature calculation 
 ///////////////////////////////////////////////////////////////////////
 
 /*
@@ -82,6 +82,10 @@ function featureCalculation2D(scaledData){
         return feature;
 }
 
+///////////////////////////////////////////////////////////////////////
+//Raw data scaling
+///////////////////////////////////////////////////////////////////////
+
 /*
 Function name: scale.
 Description: rescale the features to [-1,1].
@@ -146,85 +150,13 @@ function scaleData2D(data)
 //////////////////////////////////////////////////////////////////////
 
 /*
-Function name: trianSVM.
-Description: train SVM by given address of training data which is a three dimention array.
-Input: a string training data address and a double value of gamma value.
-Output: none. change the svm variable.
-*/
-/*
-function trainAndSaveModel(address,destination){
-    var svm = new nodesvm.CSVC({
-        kernelType: nodesvm.KernelTypes.RBF,
-        gamma: 1,
-        C: 1,
-        normalize: false,
-        reduce: false
-    });
-readFile(address,function(trainingData){
-    var scaledTrainingData = scale3D(trainingData);
-    var feature = featureCalculation3D(scaledTrainingData);
-    svm.once('trained', function(){
-        svm.saveToFile(destination);
-    });
-    svm.train(feature);
-});
-}
-*/
-//if there is processed training data already, this function can train a model to use in the code.
-/*function trainAndReturnModel(address){
-    var svm = new nodesvm.CSVC({
-        kernelType: nodesvm.KernelTypes.RBF,
-        gamma: 1,
-        C: 1,
-        normalize: false,
-        reduce: false
-    });
-readFile(address,function(trainingData){
-    console.log("trainingData successfully loaded");
-    svm.once('trained', function(){
-        console.log("successfully training");
-        return svm;
-    });
-    svm.train(trainingData);
-});
-    
-}
-*/
-/*
-Function name = testSVM.
-Description: test SVM by given address of testing data.
-Input: a string of testing data address.
-Output: test report.
-*/
-
-//////////////////////////////////////////////////////////////////////
-//Classification
-//////////////////////////////////////////////////////////////////////
-
-//Option1:a new svm model
-/*var svm = new nodesvm.CSVC({
-    kernelType: nodesvm.KernelTypes.RBF,
-    gamma: 1,
-    C: 1,
-    normalize: false,
-    reduce: false
-});*/
-//model training
-//readFile("train.csv", function(trainingData){
-//    svm.train(trainingData);
-//});
-
-//Option2:load a svm model
-//var svm = new nodesvm.CSVC({model: loadModelFromFile(address)});
-
-/*
-Function name: recognize.
-Description: return the result of prediction given a new group of raw data.
-Input: an array of instanceNum X sensorNum.
-Output: an string of result.
+Function name: trainModel.
+Description: train a SVM model with the scaled feature data.
+Input: an address of training data.
+Output: a trained model.
 */
 var svm;
-function trainModel(callback)
+function trainModel(trainingDataAddress,callback)
 {
     svm = new nodesvm.CSVC({
         kernelType: nodesvm.KernelTypes.RBF,
@@ -235,12 +167,22 @@ function trainModel(callback)
     });
     console.log("svm is successfully built");
     
-    readFile(__dirname + "/trainNew12345_100.csv",function(trainingData){
+    readFile(__dirname + trainingDataAddress,function(trainingData){
         svm.train(trainingData);
         svm.once("trained", callback);
     });
 }
 
+//////////////////////////////////////////////////////////////////////
+//Classification
+//////////////////////////////////////////////////////////////////////
+
+/*
+Function name: recognize.
+Description: return the result of prediction given a new group of raw data.
+Input: an array of instanceNum X sensorNum.
+Output: an string of result.
+*/
 function recognize(data){
     //var oldSvm = trainAndReturnModel(address);
     var patternNum;
@@ -274,5 +216,5 @@ function recognize(data){
 
 exports.recognize = recognize;
 exports.trainModel = trainModel;
-//exports.trainAndSaveModel = trainAndSaveModel;
 exports.featureCalculation3D = featureCalculation3D;
+exports.scaleData3D = scaleData3D;
