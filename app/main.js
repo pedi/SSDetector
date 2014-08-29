@@ -18,7 +18,7 @@ app.post("/predict", function(req, res) {
     // for test,now echo back data
     var result = svm.recognize(rawData);
     console.log (result);
-    res.send(result);
+    res.send(JSON.stringify(result));
     //    res.send(rawData);
 });
 app.get("/index.html", function(req, res) {

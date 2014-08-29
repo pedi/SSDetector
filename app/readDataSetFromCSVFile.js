@@ -1,7 +1,8 @@
 var fs = require('fs');
+var path = require('path');
 
 function readLines(filename, callback) {
-    var input = fs.createReadStream(filename);
+    var input = fs.createReadStream(path.resolve(filename));
     convertedData = [];
     var remaining = '';
     input.on("data", function(data) {

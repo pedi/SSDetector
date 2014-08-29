@@ -6,7 +6,8 @@
   "dependencies" : {
     "express" : "*",
     "body-parser" : "*",
-    "node-svm" : "*"
+    "node-svm" : "*",
+    "path" : "*"
   },
   "author": "chenchen",
   "license": "ISC"
